@@ -1,0 +1,176 @@
+<html>
+<!-- HAPPY BIRTHDAY 🎉 -->
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="./css/main.css">
+    <script src="./react/build/react.js"></script>
+    <script src="./react/build/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.min.js"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-66233722-3', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </head>
+  <body>
+    <div id="app"/>
+    <div id="root"></div>
+      <script type="text/babel">
+
+        //each active object needs a position and a display item
+        class Game extends React.Component {
+          constructor(props) {
+              super(props)
+              this.state = {
+                activeObjects: [],
+                score: 0,
+                playerX: window.innerWidth/2,
+                playerY: window.innerHeight - 100,
+                moveAmount: 30,
+                fallAmount: 10,
+                fallTime: 300,
+                newObjectTime: 300 * 4,
+                timeElapsed: 0,
+                objectWidth: 10,
+                catchRadius: 15,
+                mode: 'normal',
+                danishPoints: 10,
+                danishSet: false,
+                lives: 3,
+                scoredIndexes: []
+              }
+              this.boundKeyDown = this.onKeyDown.bind(this)
+          }
+
+
+          updateGameState() {
+              //update time elapsed
+              this.setState({timeElapsed: this.state.timeElapsed + 1})
+
+              //check for danish mode
+              if (this.state.score >= this.state.danishPoints && !this.state.danishSet) {
+                this.setState({
+                  mode: 'danish',
+                  activeObjects: [],
+                  scoredIndexes: [],
+                  danishSet: true,
+                })
+              }
+
+              //make objects fall down the screen
+              var updatedActiveObjects = this.state.activeObjects.map(function({x, y, color}, i) {
+                if (this.state.mode == 'normal') {
+                  return (
+                    {
+                      x: x,
+                      y: y + 20,
+                      color: color
+                    }
+                  )
+                } else {
+                  return (
+                    {
+                      x: x,
+                      y: y + 28,
+                      color: color
+                    }
+                  )
+                }
+              }.bind(this))
+
+              this.setState({activeObjects: updatedActiveObjects})
+
+              //time for a new object to be added
+              if (this.state.timeElapsed/4 % 4 == 1) {
+                var backgrounds = []
+                if (this.state.mode == 'normal') {
+                  backgrounds = ['blue', 'green']
+                }
+                else {
+                  backgrounds = ['purple', 'red']
+                }
+
+                const backgroundIndex = Math.floor(Math.random() * backgrounds.length)
+                var newObject = {
+                  x: Math.floor(Math.random() * window.innerWidth - this.state.objectWidth*2),
+                  y: 0,
+                  color: backgrounds[backgroundIndex],
+                  scored: false
+                }
+                this.state.activeObjects.push(newObject);
+              }
+
+
+              this.state.activeObjects.map(function({x, y, color}, i) {
+                  var scoredIndex = this.state.scoredIndexes.indexOf(i)
+                  //if it's already been scored, don't use it again
+                  if (scoredIndex != -1) {
+                    return
+                  }
+
+                  //check for collision
+                  if (x >= this.state.playerX - this.state.catchRadius && x <= this.state.playerX + this.state.catchRadius && y >= this.state.playerY - this.state.catchRadius && y <= this.state.playerY + this.state.catchRadius) {
+                    this.setState({score: this.state.score + 10})
+                    var scoredIndexes = this.state.scoredIndexes
+                    scoredIndexes.push(i)
+                    this.setState({scoredIndexes})
+                  }
+
+                  //check for loss of a life
+                  if (y > this.state.playerY + this.state.catchRadius) {
+                    this.setState ({lives: this.state.lives - 1})
+                    var scoredIndexes = this.state.scoredIndexes
+                    scoredIndexes.push(i)
+                    this.setState({scoredIndexes})
+                  }
+              }.bind(this))
+          }
+
+
+          componentDidMount() {
+            window.document.addEventListener('keydown', this.boundKeyDown)
+            this.timer = setInterval(this.updateGameState.bind(this), this.state.fallTime);
+          }
+
+          componentWillUnmount() {
+            clearInterval(this.timer);
+            window.document.removeEventListener('keydown', this.boundKeyDown)
+          }
+
+          //move player X
+          onKeyDown(e) {
+            if (e.keyCode === 39 && this.state.playerX <= window.innerWidth - this.state.moveAmount) {
+              this.setState({playerX: this.state.playerX + this.state.moveAmount})
+            }
+            if (e.keyCode === 37 && this.state.playerX >= this.state.moveAmount) {
+              this.setState({playerX: this.state.playerX - this.state.moveAmount})
+            }
+          }
+
+          render() {
+            var objects = this.state.activeObjects.map(function({x, y, color}, i) {
+              return (
+                <div className='object' key={i} style={{left: x + 'px', top: y + 'px', backgroundColor: color}}/>
+              )
+            })
+
+            return (
+              <div className='game' onKeyDown={this.boundKeyDown.bind(this)}>
+                <h1>Happy Birthday Alvin!</h1>
+                <h2>Use the arrow keys to collect all the birthday fun!</h2>
+                <h2>{`Score: ${this.state.score}`}</h2>
+                <h2>{`Lives: ${this.state.lives}`}</h2>
+                  <div className='player' style={{left: this.state.playerX + 'px', top: this.state.playerY + 'px'}}/>
+                  {objects}
+              </div>
+            )
+          }
+        }
+        ReactDOM.render(<Game/>, document.getElementById('root'));
+      </script>
+    </div>
+  </body>
+</html>

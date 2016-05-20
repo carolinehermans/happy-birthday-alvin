@@ -1,0 +1,16 @@
+.body {
+  position: relative;
+}
+
+.player {
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  background-color: black;
+}
+
+.object {
+  width: 10px;
+  height: 10px;
+  position: absolute;
+}
