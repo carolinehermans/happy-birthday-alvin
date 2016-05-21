@@ -126,11 +126,12 @@ h1, h2 {
   z-index: -1;
   width: 100%;
   overflow: auto;
-  background-color: #1F61A6;
+  background-color: #589DE5;
+  box-shadow: -2px -2px 4px #3072B7;
 }
 
 .player {
-  width: 100px;
+  width: 120px;
   position: absolute;
 }
 
@@ -150,7 +151,8 @@ h1, h2 {
 }
 
 .header {
-  background-color: #1F61A6;
+  background-color: #589DE5;
+  box-shadow: 2px 2px 4px #3072B7;
 }
 
 .header h1 {
@@ -190,11 +192,21 @@ h1, h2 {
 }
 
 .stats-container-container {
-  margin-left: 10%;
-  margin-right: 10%;
+  margin-left: 13%;
+  margin-right: 8%;
+  margin-top: -20px;
   display: block;
   clear: both;
   overflow: auto;
+}
+
+.lower-bar h1 {
+  margin-top: 60px;
+  font-family: 'Oswald';
+  color: white;
+  font-size: 30px;
+  text-align: center;
+
 }
 
 body {

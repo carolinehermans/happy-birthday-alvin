@@ -27,12 +27,12 @@
                 activeObjects: [],
                 score: 0,
                 playerX: window.innerWidth/2,
-                playerY: 600,
+                playerY: 500,
                 fallTime: 300,
                 moveAmount: 30,
                 timeElapsed: 0,
                 objectWidth: 10,
-                catchRadius: 50,
+                catchRadius: 130,
                 vertCatchRadius: 10,
                 mode: 'normal',
                 danishPoints: 100,
@@ -103,7 +103,7 @@
 
                 const imageIndex = Math.floor(Math.random() * images.length)
                 var newObject = {
-                  x: Math.floor(Math.random() * window.innerWidth - 200 + 100),
+                  x: Math.floor(Math.random() * (window.innerWidth - 200)) + 100,
                   y: 0,
                   image: images[imageIndex],
                   scored: false
@@ -120,7 +120,7 @@
                   }
 
                   //check for collision
-                  if (x >= this.state.playerX - this.state.catchRadius && x <= this.state.playerX + this.state.catchRadius && y >= this.state.playerY - this.state.vertCatchRadius && y <= this.state.playerY + this.state.vertCatchRadius) {
+                  if (x >= this.state.playerX - 20 && x <= this.state.playerX + this.state.catchRadius && y >= this.state.playerY - this.state.vertCatchRadius && y <= this.state.playerY + this.state.vertCatchRadius) {
                     this.setState({score: this.state.score + 10})
                     var scoredIndexes = this.state.scoredIndexes
                     scoredIndexes.push(i)
@@ -169,7 +169,6 @@
               <div>
                 <div className='game' onKeyDown={this.boundKeyDown.bind(this)}>
                   <div className='header'>
-                    <h1>CATCH THE FALLING BIRTHDAY STUFF</h1>
                     <div className='stats-container-container'>
                       <div className='stats-container'>
                         <div className='stats'>
@@ -191,7 +190,9 @@
                   <img className='player' style={{left: this.state.playerX + 'px', top: this.state.playerY + 'px'}} src={`img/${this.characterImage}`}/>
                   {objects}
                 </div>
-                <div className='lower-bar' style={{height: window.innerHeight - 680 + 'px'}}/>
+                <div className='lower-bar' style={{height: window.innerHeight - this.state.playerY - 80 + 'px'}}>
+                  <h1>Move using the arrow keys</h1>
+                </div>
               </div>
             )
           }
