@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="./css/main.css">
+    <link href='https://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'>
     <script src="./react/build/react.js"></script>
     <script src="./react/build/react-dom.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.min.js"></script>
@@ -16,11 +17,9 @@
     </script>
   </head>
   <body>
-    <div id="app"/>
     <div id="root"></div>
       <script type="text/babel">
 
-        //each active object needs a position and a display item
         class Game extends React.Component {
           constructor(props) {
               super(props)
@@ -28,23 +27,22 @@
                 activeObjects: [],
                 score: 0,
                 playerX: window.innerWidth/2,
-                playerY: window.innerHeight - 100,
-                moveAmount: 30,
-                fallAmount: 10,
+                playerY: 600,
                 fallTime: 300,
-                newObjectTime: 300 * 4,
+                moveAmount: 30,
                 timeElapsed: 0,
                 objectWidth: 10,
-                catchRadius: 15,
+                catchRadius: 50,
+                vertCatchRadius: 10,
                 mode: 'normal',
-                danishPoints: 10,
+                danishPoints: 100,
                 danishSet: false,
                 lives: 3,
                 scoredIndexes: []
               }
               this.boundKeyDown = this.onKeyDown.bind(this)
+              this.characterImage = this.props.characters[this.props.selectedCharacter].image
           }
-
 
           updateGameState() {
               //update time elapsed
@@ -61,13 +59,22 @@
               }
 
               //make objects fall down the screen
-              var updatedActiveObjects = this.state.activeObjects.map(function({x, y, color}, i) {
+
+              var updatedActiveObjects = this.state.activeObjects.map(function({x, y, image}, i) {
+                var scored = false
+                var scoredIndex = this.state.scoredIndexes.indexOf(i)
+                //if it's already been scored, don't use it again
+                if (scoredIndex != -1) {
+                  scored = true
+                }
+
                 if (this.state.mode == 'normal') {
                   return (
                     {
                       x: x,
                       y: y + 20,
-                      color: color
+                      image: image,
+                      scored: scored
                     }
                   )
                 } else {
@@ -75,7 +82,8 @@
                     {
                       x: x,
                       y: y + 28,
-                      color: color
+                      image: image,
+                      scored: scored
                     }
                   )
                 }
@@ -85,19 +93,19 @@
 
               //time for a new object to be added
               if (this.state.timeElapsed/4 % 4 == 1) {
-                var backgrounds = []
+                var images = []
                 if (this.state.mode == 'normal') {
-                  backgrounds = ['blue', 'green']
+                  images = ['present1.png', 'present2.png', 'present3.png', 'cake.png']
                 }
                 else {
-                  backgrounds = ['purple', 'red']
+                  images = ['purple', 'red']
                 }
 
-                const backgroundIndex = Math.floor(Math.random() * backgrounds.length)
+                const imageIndex = Math.floor(Math.random() * images.length)
                 var newObject = {
-                  x: Math.floor(Math.random() * window.innerWidth - this.state.objectWidth*2),
+                  x: Math.floor(Math.random() * window.innerWidth - 200 + 100),
                   y: 0,
-                  color: backgrounds[backgroundIndex],
+                  image: images[imageIndex],
                   scored: false
                 }
                 this.state.activeObjects.push(newObject);
@@ -112,7 +120,7 @@
                   }
 
                   //check for collision
-                  if (x >= this.state.playerX - this.state.catchRadius && x <= this.state.playerX + this.state.catchRadius && y >= this.state.playerY - this.state.catchRadius && y <= this.state.playerY + this.state.catchRadius) {
+                  if (x >= this.state.playerX - this.state.catchRadius && x <= this.state.playerX + this.state.catchRadius && y >= this.state.playerY - this.state.vertCatchRadius && y <= this.state.playerY + this.state.vertCatchRadius) {
                     this.setState({score: this.state.score + 10})
                     var scoredIndexes = this.state.scoredIndexes
                     scoredIndexes.push(i)
@@ -151,25 +159,141 @@
           }
 
           render() {
-            var objects = this.state.activeObjects.map(function({x, y, color}, i) {
+            var objects = this.state.activeObjects.map(function({x, y, image, scored}, i) {
               return (
-                <div className='object' key={i} style={{left: x + 'px', top: y + 'px', backgroundColor: color}}/>
+                <img src={`img/${image}`} className={`object scored-${scored}`} key={i} style={{left: x + 'px', top: y + 'px'}} />
               )
             })
 
             return (
-              <div className='game' onKeyDown={this.boundKeyDown.bind(this)}>
-                <h1>Happy Birthday Alvin!</h1>
-                <h2>Use the arrow keys to collect all the birthday fun!</h2>
-                <h2>{`Score: ${this.state.score}`}</h2>
-                <h2>{`Lives: ${this.state.lives}`}</h2>
-                  <div className='player' style={{left: this.state.playerX + 'px', top: this.state.playerY + 'px'}}/>
+              <div>
+                <div className='game' onKeyDown={this.boundKeyDown.bind(this)}>
+                  <div className='header'>
+                    <h1>CATCH THE FALLING BIRTHDAY STUFF</h1>
+                    <div className='stats-container-container'>
+                      <div className='stats-container'>
+                        <div className='stats'>
+                          <h2>{`Score: ${this.state.score}`}</h2>
+                        </div>
+                        <div className={`stats lives lives-${this.state.lives}`}>
+                          <h2>Lives:
+                          <img className='life life-1' src={`img/${this.characterImage}`}/>
+                          <img className='life life-2' src={`img/${this.characterImage}`}/>
+                          <img className='life life-3' src={`img/${this.characterImage}`}/>
+                        </h2>
+                        </div>
+                        <div className='stats'>
+                          <h2>{`Points until Danish Mode: ${this.state.danishPoints - this.state.score}`}</h2>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <img className='player' style={{left: this.state.playerX + 'px', top: this.state.playerY + 'px'}} src={`img/${this.characterImage}`}/>
                   {objects}
+                </div>
+                <div className='lower-bar' style={{height: window.innerHeight - 680 + 'px'}}/>
               </div>
             )
           }
         }
-        ReactDOM.render(<Game/>, document.getElementById('root'));
+
+        class ChooseCharacter extends React.Component {
+
+          render() {
+            const characters = this.props.characters.map(function({title, image}, i) {
+              var selected = 'not-selected'
+              if (i == this.props.selectedCharacter) {
+                  selected = 'selected'
+              }
+
+              return (
+                <div className='character' onClick={() => this.props.selectCharacter(i)} key={i}>
+                  <div className={`${selected}`}>
+                    <img className='character-pic' src={`img/${image}`}/>
+                    <img className='party-hat' src='img/partyhat.png'/>
+                    <h1>{title}</h1>
+                  </div>
+                </div>
+              )
+            }.bind(this))
+
+            return (
+              <div className='character-view'>
+                <div className='wrapper'>
+                  <h1>HAPPY 16TH BIRTHDAY ALVIN! 🎉</h1>
+                  {characters}
+                  <div className='button' onClick={() => this.props.setView(1)}>
+                    <div className='button-text'>
+                      CHOOSE CHARACTER
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
+          }
+        }
+
+        class Main extends React.Component {
+
+          constructor(props) {
+            super(props)
+            this.state = {
+              characters: ['alvin', 'mittens', 'tonks'],
+              selectedCharacter: 0,
+              currentView: 0,
+            }
+
+            this.views = [
+              ChooseCharacter,
+              Game
+            ].map(component => React.createFactory(component))
+
+            this.characters = [
+              {
+                title: 'Alvin',
+                image: 'alvin.png'
+              },
+              {
+                title: 'Mittens',
+                image: 'mittens.png'
+              },
+              {
+                title: 'Tonks',
+                image: 'tonks.png'
+              }
+            ]
+          }
+
+          selectCharacter(i) {
+            this.setState({selectedCharacter: i})
+          }
+
+          setView(i) {
+            console.log(this.state.selectedCharacter)
+            this.setState({currentView: i});
+          }
+
+          setHomeView() {
+            this.setState({currentView: 0});
+          }
+
+          render() {
+            var views = this.views.map(view => view({
+                setView: this.setView.bind(this),
+                setHomeView: this.setHomeView.bind(this),
+                selectCharacter: this.selectCharacter.bind(this),
+                selectedCharacter: this.state.selectedCharacter,
+                characters: this.characters
+            }))
+            return (
+              <div>
+                {views[this.state.currentView]}
+              </div>
+            )
+          }
+        }
+
+        ReactDOM.render(<Main/>, document.getElementById('root'));
       </script>
     </div>
   </body>

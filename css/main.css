@@ -1,16 +1,202 @@
-.body {
+body {
+  background-color: #4389D2;
+  overflow: auto;
+  margin: 0;
+}
+
+h1, h2 {
+  font-weight: normal;
+}
+
+.character-view h1 {
+  font-family: 'Oswald';
+  font-size: 55px;
+  color: white;
+  text-align: center;
+}
+
+.wrapper {
+  margin-left: 10%;
+  margin-right: 10%;
+  overflow: auto;
+}
+
+.character-view .character {
+  display: inline-block;
+  float: left;
+  width: 25%;
+  margin-left: 3%;
+  margin-right: 3%;
+  cursor: pointer;
   position: relative;
 }
 
-.player {
-  width: 10px;
-  height: 10px;
+
+.character-pic {
+  width: 100%;
+  z-index: 999;
+}
+
+.not-selected .party-hat {
+  display: none;
+}
+
+.party-hat {
+  width: 50%;
   position: absolute;
-  background-color: black;
+  left: 25%;
+  right: 25%;
+  top: -40px;
+}
+
+.character h1 {
+  font-size: 32px;
+  font-family: 'Oswald';
+  color: white;
+}
+
+.button {
+  clear: both;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.button-text{
+  overflow: hidden;
+  border-radius: 9px;
+  font-family: 'Oswald';
+  font-size: 40px;
+  color: white;
+  width: 350px;
+  background-color: #589DE5;
+  border: 4px solid #A2CBF7;
+  box-shadow: 2px 2px 4px #023660;
+  padding-left: 35px;
+  padding-right: 35px;
+  padding-top: 22px;
+  padding-bottom: 22px;
+  margin: 0 auto;
+  text-align: center;
+
+}
+
+.character-view .button {
+  clear: both;
+  padding-top: 50px;
+}
+
+.character h1 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.not-selected {
+  border: 4px solid #4389D2;
+  border-radius: 9px;
+}
+
+.selected {
+  border: 4px solid #A2CBF7;
+  border-radius: 9px;
+}
+
+.life {
+  height: 50px;
+  display: inline;
+  margin-left: 5px;
+  margin-top: 10px;
+  margin-bottom: -10px;
+}
+
+.lives-1 .life-2 {
+  visibility: hidden;
+}
+
+.lives-1 .life-3 {
+  visibility: hidden;
+}
+
+.lives-2 .life-3 {
+  visibility: hidden;
+}
+
+.lower-bar {
+  position: absolute;
+  bottom: 0;
+  z-index: -1;
+  width: 100%;
+  overflow: auto;
+  background-color: #1F61A6;
+}
+
+.player {
+  width: 100px;
+  position: absolute;
 }
 
 .object {
-  width: 10px;
-  height: 10px;
+  width: 55px;
+  z-index: -2;
   position: absolute;
+}
+
+.scored-true {
+  display: none;
+}
+
+.game {
+  position: relative;
+  height: 600px;
+}
+
+.header {
+  background-color: #1F61A6;
+}
+
+.header h1 {
+  font-family: 'Oswald';
+  font-size: 40px;
+  text-align: center;
+  color: white;
+  margin-bottom: -30px;
+  margin-top: 10px;
+}
+
+.header h2 {
+  font-family: 'Oswald';
+  font-size: 26px;
+  color: white;
+}
+
+.header {
+  overflow: auto;
+}
+
+.header .stats {
+  display: inline;
+  float: left;
+  height: 90px;
+  line-height: 90px;
+  margin-right: 60px;
+}
+
+.stats-container {
+  margin: 0 auto;
+  display: block;
+  clear: both;
+  overflow: auto;
+  width: 780px;
+  padding-bottom: 10px;
+}
+
+.stats-container-container {
+  margin-left: 10%;
+  margin-right: 10%;
+  display: block;
+  clear: both;
+  overflow: auto;
+}
+
+body {
+  position: relative;
 }
