@@ -70,7 +70,7 @@ h1, h2 {
   width: 350px;
   background-color: #589DE5;
   border: 4px solid #A2CBF7;
-  box-shadow: 2px 2px 4px #023660;
+  box-shadow: 0px 6px 4px #3072B7;
   padding-left: 35px;
   padding-right: 35px;
   padding-top: 22px;
@@ -187,7 +187,7 @@ h1, h2 {
   display: block;
   clear: both;
   overflow: auto;
-  width: 780px;
+  width: 800px;
   padding-bottom: 10px;
 }
 
@@ -204,11 +204,94 @@ h1, h2 {
   margin-top: 60px;
   font-family: 'Oswald';
   color: white;
-  font-size: 30px;
+  font-size: 35px;
   text-align: center;
-
 }
 
 body {
   position: relative;
+}
+
+iframe {
+  display: none;
+}
+
+.danish .normal-show {
+  display: none;
+}
+
+.danish .lower-bar h1 {
+  font-size: 80px;
+  margin-top: 40px;
+}
+
+.danish .stats h2 {
+  font-size: 40px;
+  line-height: normal;
+  margin-top: 30px;
+}
+
+.danish .stats .life {
+  margin-top: 3px;
+  margin-bottom: -3px;
+  margin-left: 8px;
+}
+
+.danish .stats-container {
+  width: 630px;
+}
+
+.danish .stats-container-container {
+  margin-left: 14%;
+}
+
+.normal .danish-show {
+  display: none;
+}
+
+.danish {
+  background-image: url('../img/winter-mountains.jpg');
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -3;
+}
+
+.game-over h1 {
+  font-family: 'Oswald';
+  font-size: 80px;
+  text-align: center;
+  font-weight: bold;
+  color: white;
+  margin-top: 80px;
+  margin-bottom: 10px;
+}
+
+.game-over h2 {
+  font-family: 'Oswald';
+  font-size: 60px;
+  text-align: center;
+  color: white;
+}
+
+.game-over .score {
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+.game-over .love {
+  color: #8EC1F8;
+  font-size: 40px;
+  margin-top: 40px;
+  margin-bottom: 0;
+}
+
+.game-over .lower {
+  margin-top: 10px;
+}
+
+.game-over .button-text {
+  width: 250px;
 }
