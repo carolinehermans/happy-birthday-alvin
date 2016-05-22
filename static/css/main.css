@@ -295,3 +295,60 @@ iframe {
 .game-over .button-text {
   width: 250px;
 }
+
+.danish .lower-bar h1 {
+  animation: fontbulger 2s infinite;
+}
+
+@keyframes fontbulger {
+  0% {
+    font-size: 80px;
+  }
+  50% {
+    font-size: 85px;
+  }
+  100% {
+    font-size: 80px;
+  }
+}
+
+.mobile {
+  display: none;
+}
+
+@media(max-width: 912px) {
+  .view {
+    display: none;
+  }
+
+  .mobile {
+    display: block;
+  }
+
+  .mobile h1 {
+    color: white;
+    font-family: 'Oswald';
+    font-size: 40px;
+    margin-top: 50px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .mobile h2 {
+    color: white;
+    font-family: 'Oswald';
+    font-size: 16px;
+    text-align: center;
+    font-weight: normal;
+  }
+
+  .mobile .wrapper {
+    margin-left: 15%;
+    margin-right: 15%;
+  }
+
+  .mobile img {
+    width: 100%;
+    margin: 0;
+  }
+}

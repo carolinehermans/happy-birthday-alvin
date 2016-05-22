@@ -271,8 +271,31 @@
 	      });
 	      return _react2.default.createElement(
 	        'div',
-	        null,
-	        views[this.state.currentView]
+	        { className: 'main' },
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'view' },
+	          views[this.state.currentView]
+	        ),
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'mobile' },
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'wrapper' },
+	            _react2.default.createElement(
+	              'h1',
+	              null,
+	              'Hello!'
+	            ),
+	            _react2.default.createElement('img', { src: './static/img/alvin.png' }),
+	            _react2.default.createElement(
+	              'h2',
+	              null,
+	              'This game wasn\'t built for mobile, but you can check it out on a bigger screen any time.'
+	            )
+	          )
+	        )
 	      );
 	    }
 	  }]);
@@ -21096,7 +21119,7 @@
 	      score: 0,
 	      playerX: window.innerWidth / 2,
 	      playerY: 500, // Player's distance from top of screen
-	      moveAmount: 30, // Player's horizontal movement
+	      moveAmount: 40, // Player's horizontal movement per move
 	      timeElapsed: 0,
 	      catchRadius: 130, // Distance that the player can catch horizontally
 	      vertCatchRadius: 10,
@@ -21155,7 +21178,7 @@
 	        } else {
 	          return {
 	            x: x,
-	            y: y + 20,
+	            y: y + 32,
 	            invalid: invalid
 	          };
 	        }
@@ -21172,13 +21195,20 @@
 	      // Add a new object if the time fullfils the necessary conditions
 	      if (danishCondition && this.state.mode === 'danish' || normalCondition && this.state.mode === 'normal') {
 	        // Spawn a new object at the top of the screen with random x position
+	        var newX = Math.floor(Math.random() * 1100) + 50;
+	        if (window.innerWidth > 1200) {
+	          newX = Math.floor(Math.random() * 1200) + (window.innerWidth - 1200) / 2;
+	        }
 	        var newObject = {
-	          x: Math.floor(Math.random() * (window.innerWidth - 200)) + 100,
+	          x: newX,
 	          y: 0,
 	          invalid: false
 	        };
+	
 	        // Add the new object to the list of objects
-	        this.state.activeObjects.push(newObject);
+	        if (newX <= window.innerWidth - 40) {
+	          this.state.activeObjects.push(newObject);
+	        }
 	      }
 	
 	      this.state.activeObjects.map(function (_ref2, i) {

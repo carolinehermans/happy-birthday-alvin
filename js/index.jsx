@@ -121,9 +121,19 @@ class Main extends React.Component {
       finalScore: this.finalScore
     }))
     return (
-      <div>
-        {views[this.state.currentView]}
+      <div className='main'>
+        <div className='view'>
+          {views[this.state.currentView]}
+        </div>
+        <div className='mobile'>
+          <div className='wrapper'>
+            <h1>Hello!</h1>
+            <img src='./static/img/alvin.png'/>
+            <h2>This game wasn't built for mobile, but you can check it out on a bigger screen any time.</h2>
+          </div>
+        </div>
       </div>
+
     )
   }
 }

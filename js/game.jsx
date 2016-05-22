@@ -9,7 +9,7 @@ class Game extends React.Component {
       score: 0,
       playerX: window.innerWidth / 2,
       playerY: 500, // Player's distance from top of screen
-      moveAmount: 30, // Player's horizontal movement
+      moveAmount: 40, // Player's horizontal movement per move
       timeElapsed: 0,
       catchRadius: 130, // Distance that the player can catch horizontally
       vertCatchRadius: 10,
@@ -65,7 +65,7 @@ class Game extends React.Component {
         return (
           {
             x: x,
-            y: y + 20,
+            y: y + 32,
             invalid: invalid
           }
         )
@@ -83,13 +83,20 @@ class Game extends React.Component {
     // Add a new object if the time fullfils the necessary conditions
     if (danishCondition && this.state.mode === 'danish' || normalCondition && this.state.mode === 'normal') {
       // Spawn a new object at the top of the screen with random x position
+      var newX = Math.floor(Math.random() * (1100)) + 50
+      if (window.innerWidth > 1200) {
+        newX = Math.floor(Math.random() * 1200) + ((window.innerWidth - 1200) / 2)
+      }
       var newObject = {
-        x: Math.floor(Math.random() * (window.innerWidth - 200)) + 100,
+        x: newX,
         y: 0,
         invalid: false
       }
+      
       // Add the new object to the list of objects
-      this.state.activeObjects.push(newObject)
+      if (newX <= window.innerWidth - 40) {
+        this.state.activeObjects.push(newObject)
+      }
     }
 
     this.state.activeObjects.map(function ({x, y}, i) {
