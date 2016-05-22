@@ -92,9 +92,9 @@ class Game extends React.Component {
         y: 0,
         invalid: false
       }
-      
+
       // Add the new object to the list of objects
-      if (newX <= window.innerWidth - 40) {
+      if (newX <= window.innerWidth - 60) {
         this.state.activeObjects.push(newObject)
       }
     }

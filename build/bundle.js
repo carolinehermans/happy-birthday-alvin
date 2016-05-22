@@ -245,7 +245,6 @@
 	  }, {
 	    key: 'setView',
 	    value: function setView(i) {
-	      console.log(this.state.selectedCharacter);
 	      this.setState({ currentView: i });
 	    }
 	  }, {
@@ -21206,7 +21205,7 @@
 	        };
 	
 	        // Add the new object to the list of objects
-	        if (newX <= window.innerWidth - 40) {
+	        if (newX <= window.innerWidth - 60) {
 	          this.state.activeObjects.push(newObject);
 	        }
 	      }

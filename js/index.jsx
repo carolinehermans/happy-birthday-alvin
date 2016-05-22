@@ -102,7 +102,6 @@ class Main extends React.Component {
   }
 
   setView (i) {
-    console.log(this.state.selectedCharacter)
     this.setState({currentView: i})
   }
 
