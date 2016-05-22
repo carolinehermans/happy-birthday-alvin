@@ -23,5 +23,9 @@
     "react": "^15.1.0",
     "react-dom": "^15.1.0",
     "webpack": "^1.13.1"
+  },
+  "scripts": {
+    "watch": "webpack -d --watch",
+    "build" : "webpack -p"
   }
 }

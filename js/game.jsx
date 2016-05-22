@@ -1,130 +1,140 @@
 import React from 'react'
 
 class Game extends React.Component {
-  constructor(props) {
-      super(props)
-      this.state = {
-        activeObjects: [],
-        score: 0,
-        playerX: window.innerWidth/2,
-        playerY: 500,
-        fallTime: 300,
-        moveAmount: 30,
-        timeElapsed: 0,
-        objectWidth: 10,
-        catchRadius: 130,
-        vertCatchRadius: 10,
-        mode: 'normal',
-        danishPoints: 50,
-        danishSet: false,
-        lives: 3,
-        scoredIndexes: []
-      }
-      this.boundKeyDown = this.onKeyDown.bind(this)
-      this.characterImage = this.props.characters[this.props.selectedCharacter].image
+
+  constructor (props) {
+    super(props)
+    this.state = {
+      activeObjects: [], // Objects falling down the screen
+      score: 0,
+      playerX: window.innerWidth / 2,
+      playerY: 500, // Player's distance from top of screen
+      moveAmount: 30, // Player's horizontal movement
+      timeElapsed: 0,
+      catchRadius: 130, // Distance that the player can catch horizontally
+      vertCatchRadius: 10,
+      mode: 'normal',
+      danishPoints: 100, // Switch over to danish mode
+      danishSet: false,
+      lives: 3,
+      invalidIndexes: [] // Indexes of objects that are no longer valid
+    }
+
+    // Instance-wide property allows us to add/remove eventlisteners while
+    // maintaining correct 'this' binding.
+    this.boundKeyDown = this.onKeyDown.bind(this)
+
+    this.characterImage = this.props.characters[this.props.selectedCharacter].image
   }
 
-  updateGameState() {
-      //update time elapsed
-      this.setState({timeElapsed: this.state.timeElapsed + 1})
+  updateGameState () {
+    // Update time elapsed
+    this.setState({timeElapsed: this.state.timeElapsed + 1})
 
-      //check for danish mode
-      if (this.state.score >= this.state.danishPoints && !this.state.danishSet) {
-        this.setState({
-          mode: 'danish',
-          danishSet: true,
-          moveAmount: 60,
-          vertCatchRadius: 20,
-        })
+    // Check to see if the player is ready to enter danish mode
+    if (this.state.score >= this.state.danishPoints && !this.state.danishSet) {
+      // Update game state if player has entered danish mode
+      this.setState({
+        mode: 'danish',
+        danishSet: true,
+        moveAmount: 60,
+        vertCatchRadius: 20
+      })
+    }
+
+    // Update each object's vertical position and check to see if it is valid
+    var updatedActiveObjects = this.state.activeObjects.map(function ({x, y}, i) {
+      var invalid = false
+      var index = this.state.invalidIndexes.indexOf(i)
+
+      // If the object is invalid, flag it for removal
+      if (index !== -1) {
+        invalid = true
       }
 
-      //make objects fall down the screen
-      var updatedActiveObjects = this.state.activeObjects.map(function({x, y}, i) {
-        var scored = false
-        var scoredIndex = this.state.scoredIndexes.indexOf(i)
-        //if it's already been scored, don't use it again
-        if (scoredIndex != -1) {
-          scored = true
-        }
+      // Update object's vertical position. Amount is dependent on game mode
+      if (this.state.mode === 'normal') {
+        return (
+          {
+            x: x,
+            y: y + 20,
+            invalid: invalid
+          }
+        )
+      } else {
+        return (
+          {
+            x: x,
+            y: y + 20,
+            invalid: invalid
+          }
+        )
+      }
+    }.bind(this))
 
-        if (this.state.mode == 'normal') {
-          return (
-            {
-              x: x,
-              y: y + 40,
-              scored: scored
-            }
-          )
-        } else {
-          return (
-            {
-              x: x,
-              y: y + 20,
-              scored: scored
-            }
-          )
-        }
-      }.bind(this))
+    this.setState({activeObjects: updatedActiveObjects})
 
-      this.setState({activeObjects: updatedActiveObjects})
+    // Add new objects
 
-      //time for a new object to be added
-      var danishCondition = this.state.timeElapsed/2 % 2 == 1
-      var normalCondition = this.state.timeElapsed/4 % 4 == 1
-      if (danishCondition && this.state.mode == 'danish' || normalCondition && this.state.mode == 'normal') {
-        var newObject = {
-          x: Math.floor(Math.random() * (window.innerWidth - 200)) + 100,
-          y: 0,
-          scored: false
-        }
-        this.state.activeObjects.push(newObject);
+    // Condition for adding a new object is dependent on game mode
+    var danishCondition = this.state.timeElapsed / 2 % 2 === 1
+    var normalCondition = this.state.timeElapsed % 13 === 2 || this.state.timeElapsed % 13 === 10
+
+    // Add a new object if the time fullfils the necessary conditions
+    if (danishCondition && this.state.mode === 'danish' || normalCondition && this.state.mode === 'normal') {
+      // Spawn a new object at the top of the screen with random x position
+      var newObject = {
+        x: Math.floor(Math.random() * (window.innerWidth - 200)) + 100,
+        y: 0,
+        invalid: false
+      }
+      // Add the new object to the list of objects
+      this.state.activeObjects.push(newObject)
+    }
+
+    this.state.activeObjects.map(function ({x, y}, i) {
+      // Do not interact with invalid objects
+      var index = this.state.invalidIndexes.indexOf(i)
+      if (index !== -1) {
+        return
       }
 
+      // Check for collision with the player
+      if (x >= this.state.playerX - 20 && x <= this.state.playerX + this.state.catchRadius && y >= this.state.playerY - this.state.vertCatchRadius) {
+        this.setState({score: this.state.score + 10})
+        var invalidIndexes = this.state.invalidIndexes
+        invalidIndexes.push(i)
+        this.setState({invalidIndexes})
+      }
 
-      this.state.activeObjects.map(function({x, y, color}, i) {
-          var scoredIndex = this.state.scoredIndexes.indexOf(i)
-          //if it's already been scored, don't use it again
-          if (scoredIndex != -1) {
-            return
-          }
+      // Check for loss of a life
+      if (y > this.state.playerY + this.state.catchRadius) {
+        this.setState({lives: this.state.lives - 1})
+        var indexesCopy = this.state.invalidIndexes
+        indexesCopy.push(i)
+        this.setState({indexesCopy})
+      }
 
-          //check for collision
-          if (x >= this.state.playerX - 20 && x <= this.state.playerX + this.state.catchRadius && y >= this.state.playerY - this.state.vertCatchRadius) {
-            this.setState({score: this.state.score + 10})
-            var scoredIndexes = this.state.scoredIndexes
-            scoredIndexes.push(i)
-            this.setState({scoredIndexes})
-          }
-
-          //check for loss of a life
-          if (y > this.state.playerY + this.state.catchRadius) {
-            this.setState ({lives: this.state.lives - 1})
-            var scoredIndexes = this.state.scoredIndexes
-            scoredIndexes.push(i)
-            this.setState({scoredIndexes})
-          }
-
-          //check for game over
-          if (this.state.lives == 0) {
-            this.props.setFinalScore(this.state.score)
-            this.props.setView(2)
-          }
-      }.bind(this))
+      // Check for game over
+      if (this.state.lives === 0) {
+        this.props.setFinalScore(this.state.score)
+        this.props.setView(2)
+      }
+    }.bind(this))
   }
 
-
-  componentDidMount() {
+  componentDidMount () {
     window.document.addEventListener('keydown', this.boundKeyDown)
-    this.timer = setInterval(this.updateGameState.bind(this), this.state.fallTime);
+    this.timer = setInterval(this.updateGameState.bind(this), 300)
   }
 
-  componentWillUnmount() {
-    clearInterval(this.timer);
+  componentWillUnmount () {
+    clearInterval(this.timer)
     window.document.removeEventListener('keydown', this.boundKeyDown)
   }
 
-  //move player X
-  onKeyDown(e) {
+  // Move player in x direction on arrow keys
+  onKeyDown (e) {
     if (e.keyCode === 39 && this.state.playerX < window.innerWidth - 150) {
       this.setState({playerX: this.state.playerX + this.state.moveAmount})
     }
@@ -133,30 +143,25 @@ class Game extends React.Component {
     }
   }
 
-  render() {
-
-    var objects = this.state.activeObjects.map(function({x, y, scored}, i) {
-
+  render () {
+    // Display the objects as different images depending on game mode
+    var objects = this.state.activeObjects.map(function ({x, y, invalid}, i) {
       var images = []
-      if (this.state.mode == 'normal') {
+      if (this.state.mode === 'normal') {
         images = ['present1.png', 'present2.png', 'present3.png', 'cake.png']
-      }
-      else {
+      } else {
         images = ['snowman.png', 'snowflake.png', 'snowman.png']
       }
-
       const imageIndex = i % images.length
-
-      var image = images[imageIndex]
-
+      const image = images[imageIndex]
       return (
-        <img src={`./static/img/${image}`} className={`object scored-${scored}`} key={i} style={{left: x + 'px', top: y + 'px'}} />
+        <img src={`./static/img/${image}`} className={`object scored-${invalid}`} key={i} style={{left: x + 'px', top: y + 'px'}} />
       )
     }.bind(this))
 
     return (
       <div className={`${this.state.mode}`}>
-      <iframe width="420" height="315" src="https://www.youtube.com/embed/5oLd-vYCd9k?autoplay=1&loop=1&start=15&playlist=5oLd-vYCd9k" frameborder="0" allowfullscreen></iframe>
+      <iframe width='420' height='315' src='https://www.youtube.com/embed/5oLd-vYCd9k?autoplay=1&loop=1&start=15&playlist=5oLd-vYCd9k' frameBorder='0'></iframe>
         <div className='game' onKeyDown={this.boundKeyDown.bind(this)}>
           <div className='header'>
             <div className='stats-container-container'>

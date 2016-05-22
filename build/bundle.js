@@ -81,13 +81,15 @@
 	  _createClass(ChooseCharacter, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      this.props.selectCharacter(4);
+	      // Always highlight the first character on load
+	      this.props.selectCharacter(0);
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _this3 = this;
 	
+	      // Differentiate between the selected character and the other ones
 	      var characters = this.props.characters.map(function (_ref, i) {
 	        var _this2 = this;
 	
@@ -209,8 +211,7 @@
 	    var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(Main).call(this, props));
 	
 	    _this6.state = {
-	      characters: ['alvin', 'mittens', 'tonks'],
-	      selectedCharacter: 4,
+	      selectedCharacter: 0,
 	      currentView: 0
 	    };
 	
@@ -21091,23 +21092,25 @@
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Game).call(this, props));
 	
 	    _this.state = {
-	      activeObjects: [],
+	      activeObjects: [], // Objects falling down the screen
 	      score: 0,
 	      playerX: window.innerWidth / 2,
-	      playerY: 500,
-	      fallTime: 300,
-	      moveAmount: 30,
+	      playerY: 500, // Player's distance from top of screen
+	      moveAmount: 30, // Player's horizontal movement
 	      timeElapsed: 0,
-	      objectWidth: 10,
-	      catchRadius: 130,
+	      catchRadius: 130, // Distance that the player can catch horizontally
 	      vertCatchRadius: 10,
 	      mode: 'normal',
-	      danishPoints: 50,
+	      danishPoints: 100, // Switch over to danish mode
 	      danishSet: false,
 	      lives: 3,
-	      scoredIndexes: []
+	      invalidIndexes: [] // Indexes of objects that are no longer valid
 	    };
+	
+	    // Instance-wide property allows us to add/remove eventlisteners while
+	    // maintaining correct 'this' binding.
 	    _this.boundKeyDown = _this.onKeyDown.bind(_this);
+	
 	    _this.characterImage = _this.props.characters[_this.props.selectedCharacter].image;
 	    return _this;
 	  }
@@ -21115,11 +21118,12 @@
 	  _createClass(Game, [{
 	    key: 'updateGameState',
 	    value: function updateGameState() {
-	      //update time elapsed
+	      // Update time elapsed
 	      this.setState({ timeElapsed: this.state.timeElapsed + 1 });
 	
-	      //check for danish mode
+	      // Check to see if the player is ready to enter danish mode
 	      if (this.state.score >= this.state.danishPoints && !this.state.danishSet) {
+	        // Update game state if player has entered danish mode
 	        this.setState({
 	          mode: 'danish',
 	          danishSet: true,
@@ -21128,76 +21132,83 @@
 	        });
 	      }
 	
-	      //make objects fall down the screen
+	      // Update each object's vertical position and check to see if it is valid
 	      var updatedActiveObjects = this.state.activeObjects.map(function (_ref, i) {
 	        var x = _ref.x;
 	        var y = _ref.y;
 	
-	        var scored = false;
-	        var scoredIndex = this.state.scoredIndexes.indexOf(i);
-	        //if it's already been scored, don't use it again
-	        if (scoredIndex != -1) {
-	          scored = true;
+	        var invalid = false;
+	        var index = this.state.invalidIndexes.indexOf(i);
+	
+	        // If the object is invalid, flag it for removal
+	        if (index !== -1) {
+	          invalid = true;
 	        }
 	
-	        if (this.state.mode == 'normal') {
+	        // Update object's vertical position. Amount is dependent on game mode
+	        if (this.state.mode === 'normal') {
 	          return {
 	            x: x,
-	            y: y + 40,
-	            scored: scored
+	            y: y + 20,
+	            invalid: invalid
 	          };
 	        } else {
 	          return {
 	            x: x,
 	            y: y + 20,
-	            scored: scored
+	            invalid: invalid
 	          };
 	        }
 	      }.bind(this));
 	
 	      this.setState({ activeObjects: updatedActiveObjects });
 	
-	      //time for a new object to be added
-	      var danishCondition = this.state.timeElapsed / 2 % 2 == 1;
-	      var normalCondition = this.state.timeElapsed / 4 % 4 == 1;
-	      if (danishCondition && this.state.mode == 'danish' || normalCondition && this.state.mode == 'normal') {
+	      // Add new objects
+	
+	      // Condition for adding a new object is dependent on game mode
+	      var danishCondition = this.state.timeElapsed / 2 % 2 === 1;
+	      var normalCondition = this.state.timeElapsed % 13 === 2 || this.state.timeElapsed % 13 === 10;
+	
+	      // Add a new object if the time fullfils the necessary conditions
+	      if (danishCondition && this.state.mode === 'danish' || normalCondition && this.state.mode === 'normal') {
+	        // Spawn a new object at the top of the screen with random x position
 	        var newObject = {
 	          x: Math.floor(Math.random() * (window.innerWidth - 200)) + 100,
 	          y: 0,
-	          scored: false
+	          invalid: false
 	        };
+	        // Add the new object to the list of objects
 	        this.state.activeObjects.push(newObject);
 	      }
 	
 	      this.state.activeObjects.map(function (_ref2, i) {
 	        var x = _ref2.x;
 	        var y = _ref2.y;
-	        var color = _ref2.color;
 	
-	        var scoredIndex = this.state.scoredIndexes.indexOf(i);
-	        //if it's already been scored, don't use it again
-	        if (scoredIndex != -1) {
+	        // Do not interact with invalid objects
+	        var index = this.state.invalidIndexes.indexOf(i);
+	        if (index !== -1) {
 	          return;
 	        }
 	
-	        //check for collision
+	        // Check for collision with the player
 	        if (x >= this.state.playerX - 20 && x <= this.state.playerX + this.state.catchRadius && y >= this.state.playerY - this.state.vertCatchRadius) {
 	          this.setState({ score: this.state.score + 10 });
-	          var scoredIndexes = this.state.scoredIndexes;
-	          scoredIndexes.push(i);
-	          this.setState({ scoredIndexes: scoredIndexes });
+	          var invalidIndexes = this.state.invalidIndexes;
+	          invalidIndexes.push(i);
+	          this.setState({ invalidIndexes: invalidIndexes });
 	        }
 	
-	        //check for loss of a life
+	        // Check for loss of a life
 	        if (y > this.state.playerY + this.state.catchRadius) {
 	          this.setState({ lives: this.state.lives - 1 });
-	          var scoredIndexes = this.state.scoredIndexes;
-	          scoredIndexes.push(i);
-	          this.setState({ scoredIndexes: scoredIndexes });
+	          var indexesCopy = this.state.invalidIndexes;
+	          indexesCopy.push(i);
+	          this.setState({ indexesCopy: indexesCopy });
 	        }
 	
-	        //check for game over
-	        if (this.state.lives == 0) {
+	        // Check for game over
+	        if (this.state.lives === 0) {
 	          this.props.setFinalScore(this.state.score);
 	          this.props.setView(2);
 	        }
@@ -21207,7 +21218,7 @@
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
 	      window.document.addEventListener('keydown', this.boundKeyDown);
-	      this.timer = setInterval(this.updateGameState.bind(this), this.state.fallTime);
+	      this.timer = setInterval(this.updateGameState.bind(this), 300);
 	    }
 	  }, {
 	    key: 'componentWillUnmount',
@@ -21216,7 +21227,7 @@
 	      window.document.removeEventListener('keydown', this.boundKeyDown);
 	    }
 	
-	    //move player X
+	    // Move player in x direction on arrow keys
 	
 	  }, {
 	    key: 'onKeyDown',
@@ -21231,31 +21242,27 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	
+	      // Display the objects as different images depending on game mode
 	      var objects = this.state.activeObjects.map(function (_ref3, i) {
 	        var x = _ref3.x;
 	        var y = _ref3.y;
-	        var scored = _ref3.scored;
-	
+	        var invalid = _ref3.invalid;
 	
 	        var images = [];
-	        if (this.state.mode == 'normal') {
+	        if (this.state.mode === 'normal') {
 	          images = ['present1.png', 'present2.png', 'present3.png', 'cake.png'];
 	        } else {
 	          images = ['snowman.png', 'snowflake.png', 'snowman.png'];
 	        }
-	
 	        var imageIndex = i % images.length;
-	
 	        var image = images[imageIndex];
-	
-	        return _react2.default.createElement('img', { src: './static/img/' + image, className: 'object scored-' + scored, key: i, style: { left: x + 'px', top: y + 'px' } });
+	        return _react2.default.createElement('img', { src: './static/img/' + image, className: 'object scored-' + invalid, key: i, style: { left: x + 'px', top: y + 'px' } });
 	      }.bind(this));
 	
 	      return _react2.default.createElement(
 	        'div',
 	        { className: '' + this.state.mode },
-	        _react2.default.createElement('iframe', { width: '420', height: '315', src: 'https://www.youtube.com/embed/5oLd-vYCd9k?autoplay=1&loop=1&start=15&playlist=5oLd-vYCd9k', frameborder: '0', allowfullscreen: true }),
+	        _react2.default.createElement('iframe', { width: '420', height: '315', src: 'https://www.youtube.com/embed/5oLd-vYCd9k?autoplay=1&loop=1&start=15&playlist=5oLd-vYCd9k', frameBorder: '0' }),
 	        _react2.default.createElement(
 	          'div',
 	          { className: 'game', onKeyDown: this.boundKeyDown.bind(this) },

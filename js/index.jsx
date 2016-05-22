@@ -2,13 +2,15 @@ import React from 'react'
 import {render} from 'react-dom'
 import Game from './game.jsx'
 
-
 class ChooseCharacter extends React.Component {
-  componentDidMount() {
-    this.props.selectCharacter(4)
+
+  componentDidMount () {
+    // Always highlight the first character on load
+    this.props.selectCharacter(0)
   }
 
-  render() {
+  render () {
+    // Differentiate between the selected character and the other ones
     const characters = this.props.characters.map(function({title, image}, i) {
       var selected = 'not-selected'
       if (i == this.props.selectedCharacter) {
@@ -43,7 +45,8 @@ class ChooseCharacter extends React.Component {
 }
 
 class GameOver extends React.Component {
-  render() {
+
+  render () {
     return (
       <div className='game-over'>
         <h1>GAME ØVER</h1>
@@ -61,13 +64,11 @@ class GameOver extends React.Component {
 
 class Main extends React.Component {
 
-  constructor(props) {
+  constructor (props) {
     super(props)
-
     this.state = {
-      characters: ['alvin', 'mittens', 'tonks'],
-      selectedCharacter: 4,
-      currentView: 0,
+      selectedCharacter: 0,
+      currentView: 0
     }
 
     this.views = [
@@ -92,32 +93,32 @@ class Main extends React.Component {
     ]
   }
 
-  selectCharacter(i) {
+  selectCharacter (i) {
     this.setState({selectedCharacter: i})
   }
 
-  setScore(score) {
+  setScore (score) {
     this.finalScore = score
   }
 
-  setView(i) {
+  setView (i) {
     console.log(this.state.selectedCharacter)
     this.setState({currentView: i})
   }
 
-  setHomeView() {
+  setHomeView () {
     this.setState({currentView: 0})
   }
 
-  render() {
+  render () {
     var views = this.views.map(view => view({
-        setView: this.setView.bind(this),
-        setHomeView: this.setHomeView.bind(this),
-        selectCharacter: this.selectCharacter.bind(this),
-        selectedCharacter: this.state.selectedCharacter,
-        setFinalScore: this.setScore.bind(this),
-        characters: this.characters,
-        finalScore: this.finalScore
+      setView: this.setView.bind(this),
+      setHomeView: this.setHomeView.bind(this),
+      selectCharacter: this.selectCharacter.bind(this),
+      selectedCharacter: this.state.selectedCharacter,
+      setFinalScore: this.setScore.bind(this),
+      characters: this.characters,
+      finalScore: this.finalScore
     }))
     return (
       <div>
