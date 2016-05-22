@@ -139,10 +139,10 @@
 
           //move player X
           onKeyDown(e) {
-            if (e.keyCode === 39 && this.state.playerX < window.innerWidth - 140) {
+            if (e.keyCode === 39 && this.state.playerX < window.innerWidth - 150) {
               this.setState({playerX: this.state.playerX + this.state.moveAmount})
             }
-            if (e.keyCode === 37 && this.state.playerX > this.state.moveAmount) {
+            if (e.keyCode === 37 && this.state.playerX + 30 > this.state.moveAmount) {
               this.setState({playerX: this.state.playerX - this.state.moveAmount})
             }
           }
